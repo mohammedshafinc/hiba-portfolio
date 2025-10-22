@@ -1,11 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -13,32 +22,42 @@ const Header = () => {
 
   const navItems = [
     { name: 'Home', href: '#home' },
+    { name: 'About', href: '#about' },
     { name: 'Published Articles', href: '#articles' },
     { name: 'Copywriting Work', href: '#copywriting' },
-    { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header 
+      className={`sticky top-0 z-50 transition-all duration-500 ${
+        scrolled 
+          ? 'bg-white/95 backdrop-blur-sm shadow-elegant border-b border-sand-200' 
+          : 'bg-transparent'
+      }`}
+    >
+      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#home" className="text-xl font-serif font-semibold text-text-primary">
+            <a 
+              href="#home" 
+              className="text-2xl font-serif font-bold text-ink-700 tracking-tight hover:text-sand-600 transition-colors duration-300"
+            >
               Hiba
             </a>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="text-text-secondary hover:text-text-primary px-3 py-2 text-sm font-medium transition-colors duration-200"
+                className="relative px-4 py-2 text-sm font-medium text-ink-500 hover:text-ink-700 transition-colors duration-300 group smooth-scroll"
               >
                 {item.name}
+                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-sand-500 transition-all duration-300 group-hover:w-3/4"></span>
               </a>
             ))}
           </nav>
@@ -50,6 +69,7 @@ const Header = () => {
               size="icon"
               onClick={toggleMenu}
               aria-label="Toggle menu"
+              className="text-ink-700 hover:text-sand-600"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -62,19 +82,19 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-200">
+          <div className="md:hidden pb-6 animate-in slide-in-from-top duration-300">
+            <nav className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-text-secondary hover:text-text-primary block px-3 py-2 text-base font-medium transition-colors duration-200"
+                  className="px-4 py-3 text-base font-medium text-ink-600 hover:text-ink-800 hover:bg-sand-100 rounded-md transition-all duration-200 smooth-scroll"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </a>
               ))}
-            </div>
+            </nav>
           </div>
         )}
       </div>

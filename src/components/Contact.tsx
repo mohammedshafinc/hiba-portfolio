@@ -36,29 +36,36 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 md:py-24">
-      <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold text-text-primary mb-4">
-            Contact Me
+    <section id="contact" className="py-20 md:py-28 bg-gradient-to-b from-white to-cream-100">
+      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center mb-6">
+            <span className="h-px w-12 bg-gradient-to-r from-transparent to-sand-400"></span>
+            <span className="mx-4 text-sand-500">✦</span>
+            <span className="h-px w-12 bg-gradient-to-l from-transparent to-sand-400"></span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink-800 mb-4">
+            Let's Work Together
           </h2>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto">
-            Ready to take your brand to the next level?
+          <div className="h-1 w-24 bg-gradient-to-r from-sand-400 via-sand-500 to-sand-400 mx-auto mb-6"></div>
+          <p className="text-lg text-ink-500 max-w-2xl mx-auto mb-2">
+            Have a project in mind or need compelling content?
           </p>
-          <p className="text-text-secondary mt-4">
-            My inbox is always open! You can contact me with the contact form here or with the details below:
+          <p className="text-ink-500">
+            I'd love to hear from you. Let's create something remarkable together.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Contact Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-xl font-serif font-semibold">
-                Contact Form
+          <Card className="bg-white border-sand-200 shadow-elegant">
+            <CardHeader className="border-b border-sand-200">
+              <CardTitle className="text-2xl font-serif font-semibold text-ink-800">
+                Send a Message
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {isSubmitted ? (
                 <div className="text-center py-8">
                   <div className="text-green-600 text-lg font-medium mb-2">
@@ -114,7 +121,7 @@ const Contact = () => {
                     <a href="#" className="text-primary hover:underline">Terms of Service</a> apply.
                   </div>
 
-                  <Button type="submit" className="w-full bg-accent hover:bg-accent-warm text-white">
+                  <Button type="submit" className="w-full bg-black hover:bg-gray-800 text-white">
                     Send
                   </Button>
                 </form>

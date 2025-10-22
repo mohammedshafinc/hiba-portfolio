@@ -33,15 +33,30 @@ const CopywritingWork = () => {
   ];
 
   return (
-    <section id="copywriting" className="py-16 md:py-24 bg-gray-50">
-      <div className="max-w-container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-serif font-semibold text-text-primary mb-4">
+    <section id="copywriting" className="py-20 md:py-28 bg-white relative">
+      {/* Decorative background */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-sand-100 rounded-full blur-3xl opacity-30 -z-10"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-cream-300 rounded-full blur-3xl opacity-20 -z-10"></div>
+
+      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
+        {/* Section Header */}
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center mb-6">
+            <span className="h-px w-12 bg-gradient-to-r from-transparent to-sand-400"></span>
+            <span className="mx-4 text-sand-500">✦</span>
+            <span className="h-px w-12 bg-gradient-to-l from-transparent to-sand-400"></span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-ink-800 mb-4">
             Copywriting Work
           </h2>
+          <div className="h-1 w-24 bg-gradient-to-r from-sand-400 via-sand-500 to-sand-400 mx-auto mb-6"></div>
+          <p className="text-lg text-ink-500 max-w-2xl mx-auto">
+            Strategic copy that converts—from landing pages to email campaigns
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {projects.map((project, index) => (
             <Card
               key={index}
@@ -56,8 +71,12 @@ const CopywritingWork = () => {
           ))}
         </div>
 
+        {/* CTA */}
         <div className="text-center">
-          <Button size="lg" className="bg-black text-white hover:bg-gray-800">
+          <Button 
+            size="lg" 
+            className="bg-black text-white hover:bg-gray-800 px-10 py-6 text-base font-medium shadow-elegant hover:shadow-elegant-lg transition-all duration-300 hover:-translate-y-0.5"
+          >
             Discover More Case Studies
           </Button>
         </div>
