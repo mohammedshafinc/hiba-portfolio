@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# hiba Portfolio Website
+
+A clean, minimalist portfolio website built with Next.js, TypeScript, and Tailwind CSS, designed specifically for writers and copywriters.
+
+## Features
+
+- **Responsive Design**: Mobile-first approach with hamburger menu for small screens
+- **Clean Typography**: Playfair Display for headings, Inter for body text
+- **Modern Layout**: Hero section, card grids, and contact form
+- **Smooth Animations**: Hover effects and transitions throughout
+- **Accessibility**: Focus outlines and semantic HTML
+- **SEO Optimized**: Proper metadata and Open Graph tags
+
+## Design System
+
+### Colors
+- Hero Background: `#f6f5f4` (light gray/beige)
+- Text Primary: `#111111` (near-black)
+- Text Secondary: `#666666` (gray)
+- Accent: `#2b7cff` (blue)
+- Accent Warm: `#a55b4f` (muted red)
+
+### Typography
+- Headings: Playfair Display (serif)
+- Body: Inter (sans-serif)
+- Sizes: H1 (48-64px), H2 (28-34px), Body (16px), Meta (13px)
+
+### Layout
+- Container: Max-width 1100px, centered
+- Grid: 3 columns desktop, 2 tablet, 1 mobile
+- Spacing: 64px sections, 24px gaps
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
 
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <your-repo-url>
+cd portfolio-website
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── globals.css          # Global styles and CSS utilities
+│   ├── layout.tsx           # Root layout with metadata
+│   └── page.tsx             # Main page component
+└── components/
+    ├── Header.tsx           # Navigation header with mobile menu
+    ├── Hero.tsx             # Hero section with large heading
+    ├── Card.tsx             # Reusable card component
+    ├── PublishedStories.tsx # Articles section
+    ├── CopywritingWork.tsx  # Copywriting projects section
+    ├── Contact.tsx          # Contact form and information
+    └── Footer.tsx           # Site footer
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Customization
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Content Updates
+- Edit `PublishedStories.tsx` to update article content
+- Edit `CopywritingWork.tsx` to update project content
+- Edit `Contact.tsx` to update contact information
 
-## Deploy on Vercel
+### Styling
+- Modify `tailwind.config.ts` for color and spacing changes
+- Update `globals.css` for custom CSS utilities
+- Adjust component classes for layout changes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Images
+- Replace placeholder images in `/public/` folder
+- Update image paths in component files
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+### Vercel (Recommended)
+1. Push to GitHub
+2. Connect to Vercel
+3. Deploy automatically
+
+### Other Platforms
+```bash
+npm run build
+npm start
+```
+
+## Technologies Used
+
+- **Next.js 16**: React framework with App Router
+- **TypeScript**: Type safety and better development experience
+- **Tailwind CSS**: Utility-first CSS framework
+- **Lucide React**: Icon library
+- **Google Fonts**: Playfair Display and Inter fonts
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
