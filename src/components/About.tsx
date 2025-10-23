@@ -51,7 +51,7 @@ const About = () => {
                 passionate about the power of words to inform, inspire, and persuade.
               </p>
               <p className="text-lg text-ink-600 leading-relaxed">
-                With experience spanning various industries—from technology and finance to lifestyle and education—I bring 
+                With experience spanning various industries from technology and finance to lifestyle and educationI bring 
                 a unique blend of creativity and strategic thinking to every project. My work has been featured on platforms 
                 like SkillOpt and UpdatesFeed, where I cover everything from tech innovations to cultural commentary.
               </p>
