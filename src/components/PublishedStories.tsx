@@ -39,6 +39,24 @@ const PublishedStories = () => {
       link: "https://www.updatesfeed.com/news-details/taliban-bans-books-by-women-and-key-university-subjects",
       type: "article" as const,
     },
+    {
+      title: "Nobel Prize Week 2025 Kicks Off in Stockholm",
+      excerpt: "The 2025 Nobel Prize announcements began on Monday in Stockholm, with the medicine prize awarded to three scientists, Mary Brunkow, Fred Ramsdell, and Shimon Sakaguchi for discovering how the immune system prevents itself from attacking the body. Their work has paved the way for new treatments for cancer and autoimmune diseases.",
+      source: "UpdatesFeed",
+      date: "2025",
+      thumbnail: "https://admin.updatesfeed.com/media/articles/WhatsApp_Image_2025-10-08_at_10.05.16_3a2fd5f7.jpg",
+      link: "https://www.updatesfeed.com/news-details/nobel-prize-week-2025-kicks-off-in-stockholm",
+      type: "article" as const,
+    },
+    {
+      title: "FIFA Unveils Trionda, the Official Ball for 2026 World Cup",
+      excerpt: "FIFA has revealed Trionda, the official match ball for the 2026 FIFA World Cup hosted by Canada, Mexico, and the United States. Named after the Spanish word for 'three waves,' Trionda symbolizes the unity of the three host nations with its design featuring red, green, and blue colours representing each country.",
+      source: "UpdatesFeed",
+      date: "2025",
+      thumbnail: "https://admin.updatesfeed.com/media/articles/H24587-WC26_OMB_Global_Product_Pro_Ball_Family_Shot_2_4x5-1355526.jpg",
+      link: "https://www.updatesfeed.com/news-details/fifa-unveils-trionda-the-official-ball-for-2026-world-cup",
+      type: "article" as const,
+    },
   ];
 
   return (
