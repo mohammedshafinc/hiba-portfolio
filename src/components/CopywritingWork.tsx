@@ -9,36 +9,43 @@ const CopywritingWork = () => {
       thumbnail: "/copyright/cp1.png",
       link: "https://www.instagram.com/p/DMfWNJkSq70/?igsh=d2ttMWVnMzJucmt2",
       type: "copywriting" as const,
+      description: "Tag line for business launch.",
     },
     {
       thumbnail: "/copyright/cp2.png",
       link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Content to boost digital agency",
     },
     {
       thumbnail: "/copyright/cp3.png",
       link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Youth Day Content Idea",
     },
     {
       thumbnail: "/copyright/cp4.png",
       link: "https://www.instagram.com/p/DQEa7HLDuLo/?igsh=MWU4OTRqdmNjYmRiYQ==", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Content to Promote Python Course",
     },
     {
       thumbnail: "/copyright/cp5.png",
       link: "https://www.instagram.com/p/DN2zUXo2sbw/?igsh=eGh5dDZic3FuYXV6", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Content for digital support agency",
     },
     {
       thumbnail: "/copyright/cp6.png",
       link: "https://www.instagram.com/p/DPYLzTgjgiT/?igsh=MTFhdXoxd2dxNnVwMQ==", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Importance of skill",
     },
     {
       thumbnail: "/copyright/cp7.png",
       link: "https://www.instagram.com/p/DOdtrdxDQTk/?igsh=MXM3b3dmZnU2eW4xeQ==", // Add your photo redirection link here
       type: "copywriting" as const,
+      description: "Suicide Prevention content based on films",
     },
   ];
 
@@ -88,6 +95,9 @@ const CopywritingWork = () => {
                   </div>
                 </div>
               </div>
+              <p className="mt-4 text-sm text-ink-600 text-center leading-relaxed">
+                {project.description}
+              </p>
             </div>
           ))}
         </div>
