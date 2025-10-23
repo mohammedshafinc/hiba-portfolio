@@ -1,33 +1,43 @@
+'use client';
+
 import Card from './Card';
 import { Button } from '@/components/ui/button';
 
 const CopywritingWork = () => {
   const projects = [
     {
-      title: "Project Title Placeholder",
-      excerpt: "Short project description goes here. This is dummy content used to represent a copywriting case study summary.",
-      source: "Client/Channel Placeholder",
-      date: "Jan 2024",
-      thumbnail: "/copywriting1.jpg",
-      link: "#",
+      thumbnail: "/copyright/cp1.png",
+      link: "https://www.instagram.com/p/DMfWNJkSq70/?igsh=d2ttMWVnMzJucmt2",
       type: "copywriting" as const,
     },
     {
-      title: "Landing Page Copy Placeholder",
-      excerpt: "Brief overview of the landing page objectives and results. This placeholder text demonstrates where content will appear.",
-      source: "Project Type Placeholder",
-      date: "Feb 2024",
-      thumbnail: "/copywriting2.jpg",
-      link: "#",
+      thumbnail: "/copyright/cp2.png",
+      link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
       type: "copywriting" as const,
     },
     {
-      title: "Email Campaign Placeholder",
-      excerpt: "Concise description of the email campaign, audience, and primary outcome. Dummy text for layout purposes.",
-      source: "Channel Placeholder",
-      date: "Mar 2024",
-      thumbnail: "/copywriting3.jpg",
-      link: "#",
+      thumbnail: "/copyright/cp3.png",
+      link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
+      type: "copywriting" as const,
+    },
+    {
+      thumbnail: "/copyright/cp4.png",
+      link: "https://www.instagram.com/p/DQEa7HLDuLo/?igsh=MWU4OTRqdmNjYmRiYQ==", // Add your photo redirection link here
+      type: "copywriting" as const,
+    },
+    {
+      thumbnail: "/copyright/cp5.png",
+      link: "https://www.instagram.com/p/DN2zUXo2sbw/?igsh=eGh5dDZic3FuYXV6", // Add your photo redirection link here
+      type: "copywriting" as const,
+    },
+    {
+      thumbnail: "/copyright/cp6.png",
+      link: "https://www.instagram.com/p/DPYLzTgjgiT/?igsh=MTFhdXoxd2dxNnVwMQ==", // Add your photo redirection link here
+      type: "copywriting" as const,
+    },
+    {
+      thumbnail: "/copyright/cp7.png",
+      link: "https://www.instagram.com/p/DOdtrdxDQTk/?igsh=MXM3b3dmZnU2eW4xeQ==", // Add your photo redirection link here
       type: "copywriting" as const,
     },
   ];
@@ -55,19 +65,30 @@ const CopywritingWork = () => {
           </p>
         </div>
 
-        {/* Projects Grid */}
+        {/* Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {projects.map((project, index) => (
-            <Card
+            <div
               key={index}
-              title={project.title}
-              excerpt={project.excerpt}
-              source={project.source}
-              date={project.date}
-              thumbnail={project.thumbnail}
-              link={project.link}
-              type={project.type}
-            />
+              className="group cursor-pointer elegant-hover"
+              onClick={() => window.open(project.link, '_blank')}
+            >
+              <div className="aspect-square relative overflow-hidden bg-sand-100 rounded-lg shadow-elegant">
+                <img
+                  src={project.thumbnail}
+                  alt={`Copyright work ${index + 1}`}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                    <svg className="w-6 h-6 text-ink-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 
