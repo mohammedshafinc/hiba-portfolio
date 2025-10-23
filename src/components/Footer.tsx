@@ -15,7 +15,15 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-t border-ink-700 pt-6">
           <p className="text-sm text-cream-300/70">© {new Date().getFullYear()} hiba. All rights reserved.</p>
           <div className="text-xs text-cream-300/60">
-            Built with Next.js & Tailwind CSS
+            Design and development by{' '}
+            <a 
+              href="https://github.com/mohammedshafinc" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-cream-300/80 hover:text-cream-100 transition-colors duration-200 underline decoration-cream-300/40 hover:decoration-cream-100"
+            >
+              mohammed shafin
+            </a>
           </div>
         </div>
       </div>
