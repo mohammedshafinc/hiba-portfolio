@@ -32,9 +32,12 @@ const Header = () => {
     <header 
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? 'bg-white/95 backdrop-blur-sm shadow-elegant border-b border-sand-200' 
+          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b-2 border-gradient-to-r from-violet-200 via-pink-200 to-cyan-200' 
           : 'bg-transparent'
       }`}
+      style={scrolled ? {
+        borderImage: 'linear-gradient(to right, #c4b5fd, #fbcfe8, #a5f3fc) 1'
+      } : {}}
     >
       <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex justify-between items-center h-20">
@@ -42,7 +45,7 @@ const Header = () => {
           <div className="flex-shrink-0">
             <a 
               href="#home" 
-              className="text-2xl font-serif font-bold text-ink-700 tracking-tight hover:text-sand-600 transition-colors duration-300"
+              className="text-2xl font-serif font-bold bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent tracking-tight hover:from-violet-700 hover:to-pink-700 transition-all duration-300"
             >
               Hiba
             </a>
@@ -50,16 +53,26 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="relative px-4 py-2 text-sm font-medium text-ink-500 hover:text-ink-700 transition-colors duration-300 group smooth-scroll"
-              >
-                {item.name}
-                <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 bg-sand-500 transition-all duration-300 group-hover:w-3/4"></span>
-              </a>
-            ))}
+            {navItems.map((item, index) => {
+              const colorClasses = [
+                { text: 'hover:text-violet-600', underline: 'bg-gradient-to-r from-violet-500 to-violet-600' },
+                { text: 'hover:text-pink-600', underline: 'bg-gradient-to-r from-pink-500 to-pink-600' },
+                { text: 'hover:text-rose-600', underline: 'bg-gradient-to-r from-rose-500 to-rose-600' },
+                { text: 'hover:text-cyan-600', underline: 'bg-gradient-to-r from-cyan-500 to-cyan-600' },
+                { text: 'hover:text-emerald-600', underline: 'bg-gradient-to-r from-emerald-500 to-emerald-600' },
+              ];
+              const color = colorClasses[index % colorClasses.length];
+              return (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className={`relative px-4 py-2 text-sm font-medium text-ink-600 ${color.text} transition-colors duration-300 group smooth-scroll`}
+                >
+                  {item.name}
+                  <span className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 ${color.underline} transition-all duration-300 group-hover:w-3/4`}></span>
+                </a>
+              );
+            })}
           </nav>
 
           {/* Mobile menu button */}
@@ -69,7 +82,7 @@ const Header = () => {
               size="icon"
               onClick={toggleMenu}
               aria-label="Toggle menu"
-              className="text-ink-700 hover:text-sand-600"
+              className="text-violet-600 hover:text-pink-600 hover:bg-violet-50"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -82,18 +95,28 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden pb-6 animate-in slide-in-from-top duration-300">
+          <div className="md:hidden pb-6 animate-in slide-in-from-top duration-300 bg-white/95 backdrop-blur-md rounded-lg mt-2">
             <nav className="flex flex-col space-y-2">
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="px-4 py-3 text-base font-medium text-ink-600 hover:text-ink-800 hover:bg-sand-100 rounded-md transition-all duration-200 smooth-scroll"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
+              {navItems.map((item, index) => {
+                const colorClasses = [
+                  { text: 'hover:text-violet-600', bg: 'hover:bg-violet-50' },
+                  { text: 'hover:text-pink-600', bg: 'hover:bg-pink-50' },
+                  { text: 'hover:text-rose-600', bg: 'hover:bg-rose-50' },
+                  { text: 'hover:text-cyan-600', bg: 'hover:bg-cyan-50' },
+                  { text: 'hover:text-emerald-600', bg: 'hover:bg-emerald-50' },
+                ];
+                const color = colorClasses[index % colorClasses.length];
+                return (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className={`px-4 py-3 text-base font-medium text-ink-600 ${color.text} ${color.bg} rounded-md transition-all duration-200 smooth-scroll`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {item.name}
+                  </a>
+                );
+              })}
             </nav>
           </div>
         )}
