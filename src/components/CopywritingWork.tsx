@@ -1,53 +1,36 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Card from './Card';
 import { Button } from '@/components/ui/button';
 
+interface CopywritingWork {
+  id: string;
+  thumbnail: string;
+  link: string;
+  description: string;
+  type: string;
+}
+
 const CopywritingWork = () => {
-  const projects = [
-    {
-      thumbnail: "/copyright/cp1.png",
-      link: "https://www.instagram.com/p/DMfWNJkSq70/?igsh=d2ttMWVnMzJucmt2",
-      type: "copywriting" as const,
-      description: "Tag line for business launch.",
-    },
-    {
-      thumbnail: "/copyright/cp2.png",
-      link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Content to boost digital agency",
-    },
-    {
-      thumbnail: "/copyright/cp3.png",
-      link: "https://www.instagram.com/p/DNQPvCPxSKB/?igsh=c3M3OHFwcTFmNXhj", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Youth Day Content Idea",
-    },
-    {
-      thumbnail: "/copyright/cp4.png",
-      link: "https://www.instagram.com/p/DQEa7HLDuLo/?igsh=MWU4OTRqdmNjYmRiYQ==", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Content to Promote Python Course",
-    },
-    {
-      thumbnail: "/copyright/cp5.png",
-      link: "https://www.instagram.com/p/DN2zUXo2sbw/?igsh=eGh5dDZic3FuYXV6", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Content for digital support agency",
-    },
-    {
-      thumbnail: "/copyright/cp6.png",
-      link: "https://www.instagram.com/p/DPYLzTgjgiT/?igsh=MTFhdXoxd2dxNnVwMQ==", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Importance of skill",
-    },
-    {
-      thumbnail: "/copyright/cp7.png",
-      link: "https://www.instagram.com/p/DOdtrdxDQTk/?igsh=MXM3b3dmZnU2eW4xeQ==", // Add your photo redirection link here
-      type: "copywriting" as const,
-      description: "Suicide Prevention content based on films",
-    },
-  ];
+  const [projects, setProjects] = useState<CopywritingWork[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch('/api/copywriting');
+        const data = await response.json();
+        setProjects(data);
+      } catch (error) {
+        console.error('Failed to fetch copywriting works:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   return (
     <section id="copywriting" className="py-20 md:py-28 bg-gradient-to-b from-rose-50 via-amber-50 to-emerald-50 relative overflow-hidden">
@@ -74,46 +57,56 @@ const CopywritingWork = () => {
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {projects.map((project, index) => {
-            const borderColors = [
-              'border-rose-400',
-              'border-pink-400',
-              'border-emerald-400',
-              'border-cyan-400',
-              'border-amber-400',
-              'border-violet-400',
-              'border-indigo-400',
-            ];
-            const borderColor = borderColors[index % borderColors.length];
-            return (
-              <div
-                key={index}
-                className="group cursor-pointer elegant-hover"
-                onClick={() => window.open(project.link, '_blank')}
-              >
-                <div className={`aspect-square relative overflow-hidden bg-gradient-to-br from-rose-100 to-pink-100 rounded-lg shadow-lg border-2 ${borderColor} group-hover:shadow-xl transition-all duration-300`}>
-                  <img
-                    src={project.thumbnail}
-                    alt={`Copyright work ${index + 1}`}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                      <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
+        {loading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Loading copywriting works...</p>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No copywriting works available yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {projects.map((project, index) => {
+              const borderColors = [
+                'border-rose-400',
+                'border-pink-400',
+                'border-emerald-400',
+                'border-cyan-400',
+                'border-amber-400',
+                'border-violet-400',
+                'border-indigo-400',
+              ];
+              const borderColor = borderColors[index % borderColors.length];
+              return (
+                <div
+                  key={project.id}
+                  className="group cursor-pointer elegant-hover"
+                  onClick={() => window.open(project.link, '_blank')}
+                >
+                  <div className={`aspect-square relative overflow-hidden bg-gradient-to-br from-rose-100 to-pink-100 rounded-lg shadow-lg border-2 ${borderColor} group-hover:shadow-xl transition-all duration-300`}>
+                    <img
+                      src={project.thumbnail}
+                      alt={project.description}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-lg">
+                        <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
+                  <p className="mt-4 text-sm text-ink-700 text-center leading-relaxed font-medium">
+                    {project.description}
+                  </p>
                 </div>
-                <p className="mt-4 text-sm text-ink-700 text-center leading-relaxed font-medium">
-                  {project.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* CTA */}
         <div className="text-center">
