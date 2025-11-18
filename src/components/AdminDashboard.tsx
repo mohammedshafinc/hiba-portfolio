@@ -7,6 +7,26 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
+import { Upload, X, Image as ImageIcon } from 'lucide-react';
 
 interface Article {
   id: string;
@@ -40,6 +60,8 @@ export default function AdminDashboard() {
     thumbnail: '',
     link: '',
   });
+  const [articleThumbnailPreview, setArticleThumbnailPreview] = useState<string | null>(null);
+  const [articleThumbnailMode, setArticleThumbnailMode] = useState<'url' | 'upload'>('url');
 
   // Copywriting form state
   const [copywritingForm, setCopywritingForm] = useState({
@@ -54,6 +76,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
+  // Delete dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; type: 'article' | 'copywriting'; title?: string } | null>(null);
+  
   // Edit state
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
   const [editingCopywritingId, setEditingCopywritingId] = useState<string | null>(null);
@@ -65,6 +91,8 @@ export default function AdminDashboard() {
     thumbnail: '',
     link: '',
   });
+  const [editArticleThumbnailPreview, setEditArticleThumbnailPreview] = useState<string | null>(null);
+  const [editArticleThumbnailMode, setEditArticleThumbnailMode] = useState<'url' | 'upload'>('url');
   const [editCopywritingForm, setEditCopywritingForm] = useState({
     thumbnail: '',
     link: '',
@@ -121,6 +149,8 @@ export default function AdminDashboard() {
           thumbnail: '',
           link: '',
         });
+        setArticleThumbnailPreview(null);
+        setArticleThumbnailMode('url');
         loadArticles();
       } else {
         setMessage({ type: 'error', text: data.error || 'Failed to add article' });
@@ -164,46 +194,48 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteArticle = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article?')) return;
+  const handleDeleteArticle = (id: string, title?: string) => {
+    setItemToDelete({ id, type: 'article', title });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
 
     try {
-      const response = await fetch(`/api/articles?id=${id}`, {
+      const endpoint = itemToDelete.type === 'article' ? '/api/articles' : '/api/copywriting';
+      const response = await fetch(`${endpoint}?id=${itemToDelete.id}`, {
         method: 'DELETE',
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setMessage({ type: 'success', text: 'Article deleted successfully!' });
-        loadArticles();
+        setMessage({
+          type: 'success',
+          text: itemToDelete.type === 'article'
+            ? 'Article deleted successfully!'
+            : 'Copywriting work deleted successfully!',
+        });
+        if (itemToDelete.type === 'article') {
+          loadArticles();
+        } else {
+          loadCopywritingWorks();
+        }
       } else {
-        setMessage({ type: 'error', text: data.error || 'Failed to delete article' });
+        setMessage({ type: 'error', text: data.error || 'Failed to delete item' });
       }
     } catch (error) {
       setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+    } finally {
+      setDeleteDialogOpen(false);
+      setItemToDelete(null);
     }
   };
 
-  const handleDeleteCopywriting = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this copywriting work?')) return;
-
-    try {
-      const response = await fetch(`/api/copywriting?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setMessage({ type: 'success', text: 'Copywriting work deleted successfully!' });
-        loadCopywritingWorks();
-      } else {
-        setMessage({ type: 'error', text: data.error || 'Failed to delete copywriting work' });
-      }
-    } catch (error) {
-      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
-    }
+  const handleDeleteCopywriting = (id: string, description?: string) => {
+    setItemToDelete({ id, type: 'copywriting', title: description });
+    setDeleteDialogOpen(true);
   };
 
   const handleEditArticle = (article: Article) => {
@@ -216,6 +248,8 @@ export default function AdminDashboard() {
       thumbnail: article.thumbnail,
       link: article.link,
     });
+    setEditArticleThumbnailPreview(article.thumbnail);
+    setEditArticleThumbnailMode(article.thumbnail.startsWith('data:') ? 'upload' : 'url');
   };
 
   const handleEditCopywriting = (work: CopywritingWork) => {
@@ -303,6 +337,43 @@ export default function AdminDashboard() {
       link: '',
       description: '',
     });
+    setEditArticleThumbnailPreview(null);
+    setEditArticleThumbnailMode('url');
+  };
+
+  const handleImageUpload = (
+    file: File,
+    setThumbnail: (value: string) => void,
+    setPreview: (value: string | null) => void
+  ) => {
+    if (!file.type.startsWith('image/')) {
+      setMessage({ type: 'error', text: 'Please select a valid image file' });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMessage({ type: 'error', text: 'Image size must be less than 5MB' });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setThumbnail(base64String);
+      setPreview(base64String);
+    };
+    reader.onerror = () => {
+      setMessage({ type: 'error', text: 'Failed to read image file' });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = (
+    setThumbnail: (value: string) => void,
+    setPreview: (value: string | null) => void
+  ) => {
+    setThumbnail('');
+    setPreview(null);
   };
 
   const handleLogout = async () => {
@@ -317,71 +388,81 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-serif font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Admin Dashboard
-              </h1>
-              <p className="text-gray-600 mt-1">Manage your published stories and copywriting works</p>
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle className="text-3xl font-serif font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Admin Dashboard
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Manage your published stories and copywriting works
+                </CardDescription>
+              </div>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50"
+              >
+                Logout
+              </Button>
             </div>
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="border-red-300 text-red-600 hover:bg-red-50"
-            >
-              Logout
-            </Button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-lg mb-6">
-          <div className="flex border-b">
-            <button
-              onClick={() => setActiveTab('articles')}
-              className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
-                activeTab === 'articles'
-                  ? 'border-b-2 border-indigo-600 text-indigo-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Published Stories
-            </button>
-            <button
-              onClick={() => setActiveTab('copywriting')}
-              className={`flex-1 px-6 py-4 text-center font-medium transition-colors ${
-                activeTab === 'copywriting'
-                  ? 'border-b-2 border-indigo-600 text-indigo-600'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Copywriting Works
-            </button>
-          </div>
-        </div>
+          </CardHeader>
+        </Card>
 
         {/* Message */}
         {message && (
-          <div
-            className={`mb-6 p-4 rounded-lg ${
-              message.type === 'success'
-                ? 'bg-green-50 border border-green-200 text-green-700'
-                : 'bg-red-50 border border-red-200 text-red-700'
-            }`}
+          <Alert
+            variant={message.type === 'success' ? 'success' : 'destructive'}
           >
-            {message.text}
-          </div>
+            <AlertDescription>{message.text}</AlertDescription>
+          </Alert>
         )}
 
-        {/* Articles Tab */}
-        {activeTab === 'articles' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Add Article Form */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Article</h2>
+        {/* Tabs */}
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) =>
+            setActiveTab(value as 'articles' | 'copywriting')
+          }
+          className="w-full"
+        >
+          <Card>
+            <CardContent className="p-0">
+              <TabsList className="grid w-full grid-cols-2 h-auto bg-transparent border-b rounded-none">
+                <TabsTrigger
+                  value="articles"
+                  className={cn(
+                    'rounded-none border-b-2 border-transparent py-4 px-6',
+                    activeTab === 'articles' && 'border-indigo-600 bg-transparent shadow-none text-indigo-600'
+                  )}
+                >
+                  Published Stories
+                </TabsTrigger>
+                <TabsTrigger
+                  value="copywriting"
+                  className={cn(
+                    'rounded-none border-b-2 border-transparent py-4 px-6',
+                    activeTab === 'copywriting' && 'border-indigo-600 bg-transparent shadow-none text-indigo-600'
+                  )}
+                >
+                  Copywriting Works
+                </TabsTrigger>
+              </TabsList>
+            </CardContent>
+          </Card>
+
+          {/* Articles Tab */}
+          <TabsContent value="articles" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Add Article Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Add New Article</CardTitle>
+                </CardHeader>
+                <CardContent>
               <form onSubmit={handleArticleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="article-title">Title</Label>
@@ -422,14 +503,93 @@ export default function AdminDashboard() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="article-thumbnail">Thumbnail URL</Label>
-                  <Input
-                    id="article-thumbnail"
-                    type="url"
-                    value={articleForm.thumbnail}
-                    onChange={(e) => setArticleForm({ ...articleForm, thumbnail: e.target.value })}
-                    required
-                  />
+                  <Label htmlFor="article-thumbnail">Thumbnail</Label>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant={articleThumbnailMode === 'url' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => {
+                          setArticleThumbnailMode('url');
+                          setArticleThumbnailPreview(null);
+                        }}
+                        className="flex-1"
+                      >
+                        URL
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={articleThumbnailMode === 'upload' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setArticleThumbnailMode('upload')}
+                        className="flex-1"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload
+                      </Button>
+                    </div>
+
+                    {articleThumbnailMode === 'url' ? (
+                      <Input
+                        id="article-thumbnail"
+                        type="url"
+                        value={articleForm.thumbnail}
+                        onChange={(e) => {
+                          setArticleForm({ ...articleForm, thumbnail: e.target.value });
+                          setArticleThumbnailPreview(e.target.value);
+                        }}
+                        placeholder="https://example.com/image.jpg"
+                        required
+                      />
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="article-thumbnail-file"
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                handleImageUpload(
+                                  file,
+                                  (value) => setArticleForm({ ...articleForm, thumbnail: value }),
+                                  setArticleThumbnailPreview
+                                );
+                              }
+                            }}
+                            className="flex-1"
+                            required={!articleForm.thumbnail}
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {articleThumbnailPreview && (
+                      <div className="relative border rounded-lg p-2 bg-gray-50">
+                        <img
+                          src={articleThumbnailPreview}
+                          alt="Thumbnail preview"
+                          className="w-full h-48 object-cover rounded"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-4 right-4 h-8 w-8"
+                          onClick={() =>
+                            handleRemoveImage(
+                              (value) => setArticleForm({ ...articleForm, thumbnail: value }),
+                              setArticleThumbnailPreview
+                            )
+                          }
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <Label htmlFor="article-link">Article Link</Label>
@@ -449,11 +609,20 @@ export default function AdminDashboard() {
                   {loading ? 'Adding...' : 'Add Article'}
                 </Button>
               </form>
-            </div>
+                </CardContent>
+              </Card>
 
-            {/* Articles List */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">Existing Articles ({articles.length})</h2>
+              {/* Articles List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    Existing Articles{' '}
+                    <Badge variant="secondary" className="ml-2">
+                      {articles.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
               <div className="space-y-4 max-h-[600px] overflow-y-auto">
                 {articles.map((article) => (
                   <div key={article.id} className="border rounded-lg p-4 hover:bg-gray-50">
@@ -497,14 +666,95 @@ export default function AdminDashboard() {
                           />
                         </div>
                         <div>
-                          <Label htmlFor="edit-article-thumbnail">Thumbnail URL</Label>
-                          <Input
-                            id="edit-article-thumbnail"
-                            type="url"
-                            value={editArticleForm.thumbnail}
-                            onChange={(e) => setEditArticleForm({ ...editArticleForm, thumbnail: e.target.value })}
-                            required
-                          />
+                          <Label htmlFor="edit-article-thumbnail">Thumbnail</Label>
+                          <div className="space-y-3">
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant={editArticleThumbnailMode === 'url' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => {
+                                  setEditArticleThumbnailMode('url');
+                                  if (!editArticleForm.thumbnail.startsWith('data:')) {
+                                    setEditArticleThumbnailPreview(editArticleForm.thumbnail);
+                                  }
+                                }}
+                                className="flex-1"
+                              >
+                                URL
+                              </Button>
+                              <Button
+                                type="button"
+                                variant={editArticleThumbnailMode === 'upload' ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setEditArticleThumbnailMode('upload')}
+                                className="flex-1"
+                              >
+                                <Upload className="w-4 h-4 mr-2" />
+                                Upload
+                              </Button>
+                            </div>
+
+                            {editArticleThumbnailMode === 'url' ? (
+                              <Input
+                                id="edit-article-thumbnail"
+                                type="url"
+                                value={editArticleForm.thumbnail}
+                                onChange={(e) => {
+                                  setEditArticleForm({ ...editArticleForm, thumbnail: e.target.value });
+                                  setEditArticleThumbnailPreview(e.target.value);
+                                }}
+                                placeholder="https://example.com/image.jpg"
+                                required
+                              />
+                            ) : (
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Input
+                                    id="edit-article-thumbnail-file"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        handleImageUpload(
+                                          file,
+                                          (value) => setEditArticleForm({ ...editArticleForm, thumbnail: value }),
+                                          setEditArticleThumbnailPreview
+                                        );
+                                      }
+                                    }}
+                                    className="flex-1"
+                                    required={!editArticleForm.thumbnail}
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {editArticleThumbnailPreview && (
+                              <div className="relative border rounded-lg p-2 bg-gray-50">
+                                <img
+                                  src={editArticleThumbnailPreview}
+                                  alt="Thumbnail preview"
+                                  className="w-full h-48 object-cover rounded"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="icon"
+                                  className="absolute top-4 right-4 h-8 w-8"
+                                  onClick={() =>
+                                    handleRemoveImage(
+                                      (value) => setEditArticleForm({ ...editArticleForm, thumbnail: value }),
+                                      setEditArticleThumbnailPreview
+                                    )
+                                  }
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div>
                           <Label htmlFor="edit-article-link">Article Link</Label>
@@ -548,7 +798,7 @@ export default function AdminDashboard() {
                             Edit
                           </Button>
                           <Button
-                            onClick={() => handleDeleteArticle(article.id)}
+                            onClick={() => handleDeleteArticle(article.id, article.title)}
                             variant="destructive"
                             size="sm"
                             className="flex-1 text-white"
@@ -564,16 +814,20 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-center py-8">No articles yet. Add your first article!</p>
                 )}
               </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        )}
+          </TabsContent>
 
-        {/* Copywriting Tab */}
-        {activeTab === 'copywriting' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Add Copywriting Form */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">Add New Copywriting Work</h2>
+          {/* Copywriting Tab */}
+          <TabsContent value="copywriting" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Add Copywriting Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Add New Copywriting Work</CardTitle>
+                </CardHeader>
+                <CardContent>
               <form onSubmit={handleCopywritingSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="copywriting-thumbnail">Thumbnail Path</Label>
@@ -613,11 +867,20 @@ export default function AdminDashboard() {
                   {loading ? 'Adding...' : 'Add Copywriting Work'}
                 </Button>
               </form>
-            </div>
+                </CardContent>
+              </Card>
 
-            {/* Copywriting Works List */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-6 text-gray-800">Existing Works ({copywritingWorks.length})</h2>
+              {/* Copywriting Works List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    Existing Works{' '}
+                    <Badge variant="secondary" className="ml-2">
+                      {copywritingWorks.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
               <div className="space-y-4 max-h-[600px] overflow-y-auto">
                 {copywritingWorks.map((work) => (
                   <div key={work.id} className="border rounded-lg p-4 hover:bg-gray-50">
@@ -691,7 +954,7 @@ export default function AdminDashboard() {
                               Edit
                             </Button>
                             <Button
-                              onClick={() => handleDeleteCopywriting(work.id)}
+                              onClick={() => handleDeleteCopywriting(work.id, work.description)}
                               variant="destructive"
                               size="sm"
                               className="flex-1 text-white"
@@ -708,9 +971,47 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 text-center py-8">No copywriting works yet. Add your first work!</p>
                 )}
               </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        )}
+          </TabsContent>
+        </Tabs>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Deletion</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this {itemToDelete?.type === 'article' ? 'article' : 'copywriting work'}?
+                {itemToDelete?.title && (
+                  <span className="block mt-2 font-medium text-foreground">
+                    "{itemToDelete.title}"
+                  </span>
+                )}
+                <span className="block mt-2">This action cannot be undone.</span>
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setDeleteDialogOpen(false);
+                  setItemToDelete(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDelete}
+                disabled={loading}
+              >
+                {loading ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
