@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState, useRef } from 'react';
+import { ExternalLink } from 'lucide-react';
 
-interface MalayalamCopywritingWorkItem {
+interface MalayalamCopywritingWork {
   id: string;
   thumbnail: string;
   link: string;
@@ -12,8 +12,10 @@ interface MalayalamCopywritingWorkItem {
 }
 
 const MalayalamCopywritingWork = () => {
-  const [projects, setProjects] = useState<MalayalamCopywritingWorkItem[]>([]);
+  const [projects, setProjects] = useState<MalayalamCopywritingWork[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -31,100 +33,104 @@ const MalayalamCopywritingWork = () => {
     fetchProjects();
   }, []);
 
-  return (
-    <section
-      id="malayalam-copywriting"
-      className="py-20 md:py-28 bg-gradient-to-b from-emerald-50 via-cyan-50 to-indigo-50 relative overflow-hidden"
-    >
-      {/* Colorful decorative background */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-200 rounded-full blur-3xl opacity-35 -z-10"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-200 rounded-full blur-3xl opacity-25 -z-10"></div>
-      <div className="absolute top-1/2 right-1/4 w-72 h-72 bg-cyan-200 rounded-full blur-3xl opacity-25 -z-10"></div>
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
 
-      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} id="malayalam-copywriting" className="section-padding bg-[var(--bg-secondary)] relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--accent-primary)]/30 to-transparent"></div>
+      
+      {/* Decorative Malayalam script element */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 text-[20rem] font-editorial text-[var(--accent-primary)]/5 leading-none pointer-events-none select-none">
+        മ
+      </div>
+      
+      <div className="container-custom relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent via-emerald-500 to-cyan-500"></span>
-            <span className="mx-4 text-emerald-600 text-2xl">✦</span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent via-indigo-500 to-violet-500"></span>
+        <div className={`max-w-3xl mb-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="divider-accent"></div>
+            <span className="text-[var(--accent-primary)] text-sm font-semibold uppercase tracking-[0.2em]">
+              Regional Work
+            </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold bg-gradient-to-r from-emerald-600 via-cyan-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            Malayalam Copywriting
+          <h2 className="text-[var(--text-primary)] mb-6">
+            Malayalam <span className="text-gradient font-editorial italic">Copywriting</span>
           </h2>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-emerald-500 via-cyan-500 via-indigo-500 to-violet-500 mx-auto mb-6 rounded-full"></div>
-          <p className="text-lg text-ink-600 max-w-2xl mx-auto">
-            Malayalam copy and captions—crafted for clarity, culture, and conversion
+          <p className="text-lg text-[var(--text-secondary)]">
+            Creative copywriting in Malayalam—connecting brands with regional audiences through culturally resonant content.
           </p>
         </div>
 
         {/* Gallery Grid */}
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">Loading malayalam copywriting works...</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="aspect-square bg-[var(--bg-card)] animate-pulse"></div>
+            ))}
           </div>
         ) : projects.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">No malayalam copywriting works available yet.</p>
+          <div className="text-center py-20 border border-dashed border-white/10">
+            <p className="text-[var(--text-muted)]">Malayalam copywriting works coming soon.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {projects.map((project, index) => {
-              const borderColors = [
-                'border-emerald-400',
-                'border-cyan-400',
-                'border-indigo-400',
-                'border-violet-400',
-                'border-amber-400',
-                'border-rose-400',
-                'border-sky-400',
-              ];
-              const borderColor = borderColors[index % borderColors.length];
-              return (
-                <div
-                  key={project.id}
-                  className="group cursor-pointer elegant-hover"
-                  onClick={() => window.open(project.link, '_blank')}
-                >
-                  <div
-                    className={`aspect-square relative overflow-hidden bg-gradient-to-br from-emerald-100 to-cyan-100 rounded-lg shadow-lg border-2 ${borderColor} group-hover:shadow-xl transition-all duration-300`}
-                  >
-                    <img
-                      src={project.thumbnail}
-                      alt={project.description}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="bg-white/95 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                        <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {projects.map((project, index) => (
+              <a
+                key={project.id}
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`group relative aspect-square overflow-hidden bg-[var(--bg-card)] border border-white/5 hover:border-[var(--accent-primary)]/30 transition-all duration-500 ${
+                  isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                }`}
+                style={{ transitionDelay: `${index * 80}ms` }}
+              >
+                {/* Image */}
+                <img
+                  src={project.thumbnail}
+                  alt={project.description}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute inset-0 flex flex-col justify-end p-4">
+                    <p className="text-sm text-[var(--text-primary)] font-medium line-clamp-2 mb-2">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center text-xs text-[var(--accent-primary)]">
+                      <span>View</span>
+                      <ExternalLink className="ml-1 w-3 h-3" />
                     </div>
                   </div>
-                  <p className="mt-4 text-sm text-ink-700 text-center leading-relaxed font-medium">
-                    {project.description}
-                  </p>
                 </div>
-              );
-            })}
+
+                {/* Corner accent */}
+                <div className="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-t-[var(--accent-primary)] border-l-[40px] border-l-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </a>
+            ))}
           </div>
         )}
-
-        {/* CTA */}
-        <div className="text-center">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-emerald-600 to-indigo-600 text-white hover:from-emerald-700 hover:to-indigo-700 px-10 py-6 text-base font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-          >
-            Explore More Malayalam Works
-          </Button>
-        </div>
       </div>
     </section>
   );
 };
 
 export default MalayalamCopywritingWork;
-

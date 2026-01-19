@@ -1,65 +1,105 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 const Hero = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <section id="home" className="relative min-h-[85vh] flex items-center bg-gradient-to-br from-violet-100 via-pink-100 via-rose-100 to-cyan-100 overflow-hidden">
-      {/* Colorful background patterns */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-violet-400 rounded-full blur-3xl"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-pink-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-cyan-400 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 right-1/4 w-64 h-64 bg-rose-400 rounded-full blur-3xl"></div>
-      </div>
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-[var(--bg-primary)]">
+      {/* Grid pattern background */}
+      <div className="absolute inset-0 grid-pattern opacity-50"></div>
       
-      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12 py-20 md:py-28 relative z-10">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Decorative flourish */}
-          <div className="flex items-center justify-center mb-8">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent via-violet-500 to-pink-500"></span>
-            <span className="mx-4 text-violet-600 text-2xl">✦</span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent via-rose-500 to-cyan-500"></span>
+      {/* Gradient orbs */}
+      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--accent-primary)] rounded-full blur-[150px] opacity-20 animate-pulse-slow"></div>
+      <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-[var(--accent-secondary)] rounded-full blur-[120px] opacity-15 animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+      
+      {/* Decorative lines */}
+      <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[var(--accent-primary)]/20 to-transparent"></div>
+      <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-[var(--accent-primary)]/10 to-transparent"></div>
+      
+      <div className="container-custom relative z-10 pt-32 pb-20">
+        <div className="max-w-5xl">
+          {/* Eyebrow */}
+          <div 
+            className={`flex items-center gap-4 mb-8 transition-all duration-700 ${
+              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
+            <div className="divider-accent"></div>
+            <span className="text-[var(--accent-primary)] text-sm font-semibold uppercase tracking-[0.2em]">
+              Digital Author & Copywriter
+            </span>
           </div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold bg-gradient-to-r from-violet-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-6 tracking-tight">
-            Hiba
+          {/* Main headline */}
+          <h1 
+            className={`mb-8 transition-all duration-700 delay-100 ${
+              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <span className="block text-[var(--text-primary)]">Crafting Stories</span>
+            <span className="block text-[var(--text-primary)]">That <span className="text-gradient font-editorial italic">Resonate</span></span>
           </h1>
-          
-          <div className="h-1.5 w-24 bg-gradient-to-r from-violet-500 via-pink-500 via-rose-500 to-cyan-500 mx-auto mb-8 rounded-full"></div>
-          
-          <p className="text-2xl md:text-3xl font-serif text-ink-700 mb-8 italic font-light">
-            Digital Author & Copywriter
-          </p>
-          
-          <p className="text-lg md:text-xl text-ink-600 max-w-2xl mx-auto leading-relaxed mb-12">
-            Crafting compelling narratives and persuasive copy that resonates. 
-            Specializing in thoughtful content across diverse industries with a focus on 
-            authenticity and impact.
+
+          {/* Description */}
+          <p 
+            className={`text-xl md:text-2xl text-[var(--text-secondary)] max-w-2xl mb-12 leading-relaxed font-light transition-all duration-700 delay-200 ${
+              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            I turn ideas into compelling narratives. From published articles to 
+            persuasive copy, I help brands find their voice and connect with their audience.
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a 
-              href="#articles"
-              className="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-violet-600 to-pink-600 text-white font-medium rounded-lg hover:from-violet-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 smooth-scroll"
-            >
+          <div 
+            className={`flex flex-col sm:flex-row gap-4 mb-20 transition-all duration-700 delay-300 ${
+              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            <a href="#articles" className="btn-primary group">
               View My Work
-              <svg className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg className="ml-3 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </a>
-            <a 
-              href="#contact"
-              className="inline-flex items-center px-8 py-4 bg-white text-violet-600 font-medium border-2 border-violet-500 rounded-lg hover:bg-gradient-to-r hover:from-cyan-500 hover:to-emerald-500 hover:text-white hover:border-transparent transition-all duration-300 smooth-scroll"
-            >
+            <a href="#contact" className="btn-outline">
               Get In Touch
             </a>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="mt-20 flex flex-col items-center">
-            <p className="text-xs uppercase tracking-wide text-violet-600 mb-3 font-medium">Scroll to explore</p>
-            <div className="w-6 h-10 border-2 border-violet-400 rounded-full flex items-start justify-center p-2">
-              <div className="w-1.5 h-3 bg-gradient-to-b from-violet-500 to-pink-500 rounded-full animate-bounce"></div>
-            </div>
+          {/* Stats */}
+          <div 
+            className={`flex flex-wrap gap-12 md:gap-16 pt-12 border-t border-white/10 transition-all duration-700 delay-400 ${
+              mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
+            {[
+              { number: '50+', label: 'Articles Published' },
+              { number: '20+', label: 'Brands Served' },
+              { number: '3+', label: 'Years Experience' },
+            ].map((stat, index) => (
+              <div key={index} className="group">
+                <div className="text-4xl md:text-5xl font-bold text-gradient mb-2 group-hover:scale-105 transition-transform">
+                  {stat.number}
+                </div>
+                <div className="text-sm text-[var(--text-muted)] uppercase tracking-wider">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
+          <span className="text-xs text-[var(--text-muted)] uppercase tracking-[0.2em]">Scroll</span>
+          <div className="w-px h-12 bg-gradient-to-b from-[var(--accent-primary)] to-transparent animate-pulse"></div>
         </div>
       </div>
     </section>
@@ -67,4 +107,3 @@ const Hero = () => {
 };
 
 export default Hero;
-

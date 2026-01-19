@@ -1,11 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useRef, useEffect } from 'react';
+import { Mail, Send, MessageSquare } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +10,25 @@ const Contact = () => {
     message: '',
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -25,22 +40,14 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Format the message for WhatsApp
     const phoneNumber = '9544282003';
     const message = `*New Contact Form Submission*\n\n*Name:* ${formData.name}\n*Email:* ${formData.email}\n\n*Message:*\n${formData.message}`;
-    
-    // Encode the message for URL
     const encodedMessage = encodeURIComponent(message);
-    
-    // Create WhatsApp link
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
     
-    // Open WhatsApp in a new window/tab
     window.open(whatsappUrl, '_blank');
-    
     setIsSubmitted(true);
     
-    // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false);
       setFormData({ name: '', email: '', message: '' });
@@ -48,67 +55,106 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-gradient-to-b from-cyan-50 via-sky-50 to-violet-50 relative overflow-hidden">
-      {/* Colorful background accents */}
-      <div className="absolute top-0 left-0 w-80 h-80 bg-cyan-200 rounded-full blur-3xl opacity-30 -z-10"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-violet-200 rounded-full blur-3xl opacity-25 -z-10"></div>
+    <section ref={sectionRef} id="contact" className="section-padding bg-[var(--bg-secondary)] relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 grid-pattern opacity-30"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[var(--accent-primary)]/30 to-transparent"></div>
       
-      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent via-cyan-500 to-sky-500"></span>
-            <span className="mx-4 text-cyan-600 text-2xl">✦</span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent via-violet-500 to-indigo-500"></span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold bg-gradient-to-r from-cyan-600 via-sky-600 to-violet-600 bg-clip-text text-transparent mb-4">
-            Let's Work Together
-          </h2>
-          <div className="h-1.5 w-24 bg-gradient-to-r from-cyan-500 via-sky-500 via-violet-500 to-indigo-500 mx-auto mb-6 rounded-full"></div>
-          <p className="text-lg text-ink-600 max-w-2xl mx-auto mb-2">
-            Have a project in mind or need compelling content?
-          </p>
-          <p className="text-ink-600">
-            I'd love to hear from you. Let's create something remarkable together.
-          </p>
-        </div>
+      {/* Gradient orb */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-96 h-96 bg-[var(--accent-primary)] rounded-full blur-[200px] opacity-10"></div>
+      
+      <div className="container-custom relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+          {/* Left - Info */}
+          <div className={`transition-all duration-1000 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'}`}>
+            <div className="flex items-center gap-4 mb-6">
+              <div className="divider-accent"></div>
+              <span className="text-[var(--accent-primary)] text-sm font-semibold uppercase tracking-[0.2em]">
+                Contact
+              </span>
+            </div>
+            
+            <h2 className="text-[var(--text-primary)] mb-6">
+              Let's Create<br />
+              <span className="text-gradient font-editorial italic">Together</span>
+            </h2>
+            
+            <p className="text-lg text-[var(--text-secondary)] mb-12 max-w-md">
+              Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your ideas to life through compelling content.
+            </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Contact Form */}
-          <Card className="bg-white border-2 border-cyan-200 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="border-b-2 border-cyan-100 bg-gradient-to-r from-cyan-50 to-sky-50">
-              <CardTitle className="text-2xl font-serif font-semibold bg-gradient-to-r from-cyan-600 to-violet-600 bg-clip-text text-transparent">
-                Send a Message
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
+            {/* Contact methods */}
+            <div className="space-y-6">
+              <a 
+                href="mailto:parambadenhiba@gmail.com" 
+                className="group flex items-center gap-4 p-4 bg-[var(--bg-card)] border border-white/5 hover:border-[var(--accent-primary)]/30 transition-all duration-300"
+              >
+                <div className="w-12 h-12 flex items-center justify-center bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-[var(--text-muted)] mb-1">Email</p>
+                  <p className="text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                    parambadenhiba@gmail.com
+                  </p>
+                </div>
+              </a>
+
+              <a 
+                href="https://wa.me/9544282003" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-4 p-4 bg-[var(--bg-card)] border border-white/5 hover:border-[var(--accent-primary)]/30 transition-all duration-300"
+              >
+                <div className="w-12 h-12 flex items-center justify-center bg-[var(--accent-primary)]/10 text-[var(--accent-primary)]">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-sm text-[var(--text-muted)] mb-1">WhatsApp</p>
+                  <p className="text-[var(--text-primary)] group-hover:text-[var(--accent-primary)] transition-colors">
+                    +91 954 428 2003
+                  </p>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          {/* Right - Form */}
+          <div className={`transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'}`}>
+            <div className="bg-[var(--bg-card)] border border-white/5 p-8 md:p-10">
               {isSubmitted ? (
-                <div className="text-center py-8">
-                  <div className="text-emerald-600 text-lg font-medium mb-2">
-                    Message successfully sent!
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-[var(--accent-primary)]/10 flex items-center justify-center">
+                    <Send className="w-8 h-8 text-[var(--accent-primary)]" />
                   </div>
-                  <p className="text-ink-600">
-                    Thank you for reaching out. I'll get back to you soon!
+                  <h3 className="text-xl font-semibold text-[var(--text-primary)] mb-2">Message Sent!</h3>
+                  <p className="text-[var(--text-secondary)]">
+                    Thank you for reaching out. I'll get back to you soon.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-ink-700 font-medium">Name *</Label>
-                    <Input
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      Name
+                    </label>
+                    <input
+                      type="text"
                       id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
                       required
                       placeholder="Your name"
-                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
+                      className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-white/10 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-ink-700 font-medium">Email *</Label>
-                    <Input
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      Email
+                    </label>
+                    <input
                       type="email"
                       id="email"
                       name="email"
@@ -116,68 +162,33 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       placeholder="your.email@example.com"
-                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
+                      className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-white/10 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="message" className="text-ink-700 font-medium">Message *</Label>
-                    <Textarea
+                  <div>
+                    <label htmlFor="message" className="block text-sm font-medium text-[var(--text-primary)] mb-2">
+                      Message
+                    </label>
+                    <textarea
                       id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      rows={6}
+                      rows={5}
                       placeholder="Tell me about your project..."
-                      className="border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
+                      className="w-full px-4 py-3 bg-[var(--bg-tertiary)] border border-white/10 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors resize-none"
                     />
                   </div>
 
-                  <div className="text-xs text-ink-500 mb-4">
-                    This site is protected by reCAPTCHA and the Google{' '}
-                    <a href="#" className="text-cyan-600 hover:text-cyan-700 hover:underline font-medium">Privacy Policy</a> and{' '}
-                    <a href="#" className="text-cyan-600 hover:text-cyan-700 hover:underline font-medium">Terms of Service</a> apply.
-                  </div>
-
-                  <Button type="submit" className="w-full bg-gradient-to-r from-cyan-600 to-violet-600 hover:from-cyan-700 hover:to-violet-700 text-white shadow-lg hover:shadow-xl transition-all duration-300">
-                    Send
-                  </Button>
+                  <button type="submit" className="w-full btn-primary">
+                    Send Message
+                    <Send className="ml-2 w-4 h-4" />
+                  </button>
                 </form>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Contact Information */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xl font-serif font-semibold bg-gradient-to-r from-cyan-600 to-violet-600 bg-clip-text text-transparent mb-4">
-                Get in Touch
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-medium text-ink-700 mb-2">Email</h4>
-                  <a
-                    href="mailto:parambadenhiba@gmail.com"
-                    className="text-cyan-600 hover:text-violet-600 transition-colors duration-200 font-medium"
-                  >
-                   parambadenhiba@gmail.com
-                  </a>
-                </div>
-              </div>
             </div>
-
-            <Card className="bg-gradient-to-br from-cyan-50 to-violet-50 border-2 border-cyan-200 shadow-lg">
-              <CardContent className="p-6">
-                <h4 className="font-serif font-semibold bg-gradient-to-r from-cyan-600 to-violet-600 bg-clip-text text-transparent mb-3">
-                  hiba
-                </h4>
-                <p className="text-ink-600 text-sm leading-relaxed">
-                  Digital author and copywriter specializing in creating compelling content 
-                  that drives engagement and conversions across various industries.
-                </p>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

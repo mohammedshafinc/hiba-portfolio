@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,121 +9,100 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 50);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   const navItems = [
-    { name: 'Home', href: '#home' },
+    { name: 'Work', href: '#articles' },
+    { name: 'Malayalam', href: '#malayalam-copywriting' },
+    { name: 'Copywriting', href: '#copywriting' },
     { name: 'About', href: '#about' },
-    { name: 'Published Articles', href: '#articles' },
-    { name: 'Malayalam Copywriting', href: '#malayalam-copywriting' },
-    { name: 'Copywriting Work', href: '#copywriting' },
     { name: 'Contact', href: '#contact' },
   ];
 
   return (
     <header 
-      className={`sticky top-0 z-50 transition-all duration-500 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? 'bg-white/95 backdrop-blur-md shadow-lg border-b-2 border-gradient-to-r from-violet-200 via-pink-200 to-cyan-200' 
+          ? 'bg-[#0a0a0b]/95 backdrop-blur-md border-b border-white/5' 
           : 'bg-transparent'
       }`}
-      style={scrolled ? {
-        borderImage: 'linear-gradient(to right, #c4b5fd, #fbcfe8, #a5f3fc) 1'
-      } : {}}
     >
-      <div className="max-w-container mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="flex justify-between items-center h-20">
+      <div className="container-custom">
+        <div className="flex justify-between items-center h-20 md:h-24">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <a 
-              href="#home" 
-              className="text-2xl font-serif font-bold bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent tracking-tight hover:from-violet-700 hover:to-pink-700 transition-all duration-300"
-            >
-              Hiba
-            </a>
-          </div>
+          <a 
+            href="#home" 
+            className="relative group"
+          >
+            <span className="text-2xl md:text-3xl font-bold tracking-tight text-gradient">
+              HIBA
+            </span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--accent-primary)] transition-all duration-300 group-hover:w-full"></span>
+          </a>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item, index) => {
-              const colorClasses = [
-                { text: 'hover:text-violet-600', underline: 'bg-gradient-to-r from-violet-500 to-violet-600' },
-                { text: 'hover:text-pink-600', underline: 'bg-gradient-to-r from-pink-500 to-pink-600' },
-                { text: 'hover:text-rose-600', underline: 'bg-gradient-to-r from-rose-500 to-rose-600' },
-                { text: 'hover:text-cyan-600', underline: 'bg-gradient-to-r from-cyan-500 to-cyan-600' },
-                { text: 'hover:text-emerald-600', underline: 'bg-gradient-to-r from-emerald-500 to-emerald-600' },
-              ];
-              const color = colorClasses[index % colorClasses.length];
-              return (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className={`relative px-4 py-2 text-sm font-medium text-ink-600 ${color.text} transition-colors duration-300 group smooth-scroll`}
-                >
-                  {item.name}
-                  <span className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0.5 ${color.underline} transition-all duration-300 group-hover:w-3/4`}></span>
-                </a>
-              );
-            })}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="relative px-5 py-2 text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors duration-300 group"
+              >
+                {item.name}
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent-primary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              </a>
+            ))}
+            <a
+              href="#contact"
+              className="ml-4 px-6 py-2.5 text-sm font-semibold border border-[var(--accent-primary)] text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--bg-primary)] transition-all duration-300"
+            >
+              Hire Me
+            </a>
           </nav>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMenu}
-              aria-label="Toggle menu"
-              className="text-violet-600 hover:text-pink-600 hover:bg-violet-50"
-            >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </Button>
-          </div>
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--accent-primary)] transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden pb-6 animate-in slide-in-from-top duration-300 bg-white/95 backdrop-blur-md rounded-lg mt-2">
-            <nav className="flex flex-col space-y-2">
-              {navItems.map((item, index) => {
-                const colorClasses = [
-                  { text: 'hover:text-violet-600', bg: 'hover:bg-violet-50' },
-                  { text: 'hover:text-pink-600', bg: 'hover:bg-pink-50' },
-                  { text: 'hover:text-rose-600', bg: 'hover:bg-rose-50' },
-                  { text: 'hover:text-cyan-600', bg: 'hover:bg-cyan-50' },
-                  { text: 'hover:text-emerald-600', bg: 'hover:bg-emerald-50' },
-                ];
-                const color = colorClasses[index % colorClasses.length];
-                return (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={`px-4 py-3 text-base font-medium text-ink-600 ${color.text} ${color.bg} rounded-md transition-all duration-200 smooth-scroll`}
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {item.name}
-                  </a>
-                );
-              })}
-            </nav>
-          </div>
-        )}
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-500 ${
+            isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <nav className="py-6 border-t border-white/5 space-y-1">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="block px-4 py-3 text-base font-medium text-[var(--text-secondary)] hover:text-[var(--accent-primary)] hover:bg-white/5 transition-all duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </a>
+            ))}
+            <a
+              href="#contact"
+              className="block mx-4 mt-4 px-6 py-3 text-center text-sm font-semibold border border-[var(--accent-primary)] text-[var(--accent-primary)] hover:bg-[var(--accent-primary)] hover:text-[var(--bg-primary)] transition-all duration-300"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Hire Me
+            </a>
+          </nav>
+        </div>
       </div>
     </header>
   );
 };
 
 export default Header;
-
