@@ -68,7 +68,7 @@ const About = () => {
             
             {/* Floating badge */}
             <div className="absolute -bottom-6 -right-6 bg-[var(--accent-primary)] text-[var(--bg-primary)] px-6 py-4">
-              <span className="text-3xl font-bold">3+</span>
+              <span className="text-3xl font-bold">1+</span>
               <span className="block text-xs uppercase tracking-wider">Years</span>
             </div>
           </div>

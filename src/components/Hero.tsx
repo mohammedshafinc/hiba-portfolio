@@ -18,10 +18,6 @@ const Hero = () => {
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[var(--accent-primary)] rounded-full blur-[150px] opacity-20 animate-pulse-slow"></div>
       <div className="absolute bottom-1/4 -right-32 w-80 h-80 bg-[var(--accent-secondary)] rounded-full blur-[120px] opacity-15 animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
       
-      {/* Decorative lines */}
-      <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-[var(--accent-primary)]/20 to-transparent"></div>
-      <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-[var(--accent-primary)]/10 to-transparent"></div>
-      
       <div className="container-custom relative z-10 pt-32 pb-20">
         <div className="max-w-5xl">
           {/* Eyebrow */}
@@ -82,7 +78,7 @@ const Hero = () => {
             {[
               { number: '50+', label: 'Articles Published' },
               { number: '20+', label: 'Brands Served' },
-              { number: '3+', label: 'Years Experience' },
+              { number: '1+', label: 'Years Experience' },
             ].map((stat, index) => (
               <div key={index} className="group">
                 <div className="text-4xl md:text-5xl font-bold text-gradient mb-2 group-hover:scale-105 transition-transform">
@@ -94,12 +90,6 @@ const Hero = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3">
-          <span className="text-xs text-[var(--text-muted)] uppercase tracking-[0.2em]">Scroll</span>
-          <div className="w-px h-12 bg-gradient-to-b from-[var(--accent-primary)] to-transparent animate-pulse"></div>
         </div>
       </div>
     </section>
