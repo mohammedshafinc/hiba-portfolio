@@ -16,10 +16,11 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { name: 'Copywriting', href: '#copywriting' },
-    { name: 'Malayalam', href: '#malayalam-copywriting' },
-    { name: 'Articles', href: '#articles' },
     { name: 'About', href: '#about' },
+    { name: 'Copywriting', href: '#copywriting' },
+    { name: 'Malayalam Copywriting', href: '#malayalam-copywriting' },
+    { name: 'Articles', href: '#articles' },
+   
     { name: 'Contact', href: '#contact' },
   ];
 
