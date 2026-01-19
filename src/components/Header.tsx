@@ -24,6 +24,7 @@ const Header = () => {
     { name: 'Home', href: '#home' },
     { name: 'About', href: '#about' },
     { name: 'Published Articles', href: '#articles' },
+    { name: 'Malayalam Copywriting', href: '#malayalam-copywriting' },
     { name: 'Copywriting Work', href: '#copywriting' },
     { name: 'Contact', href: '#contact' },
   ];

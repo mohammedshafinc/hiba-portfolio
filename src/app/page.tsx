@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import PublishedStories from '@/components/PublishedStories';
 import CopywritingWork from '@/components/CopywritingWork';
+import MalayalamCopywritingWork from '@/components/MalayalamCopywritingWork';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import About from '@/components/About';
@@ -13,6 +14,7 @@ export default function Home() {
       <Hero />
       <About />
       <PublishedStories />
+      <MalayalamCopywritingWork />
       <CopywritingWork />
       <Contact />
       <Footer />

@@ -47,9 +47,17 @@ interface CopywritingWork {
   type: string;
 }
 
+interface MalayalamCopywritingWork {
+  id: string;
+  thumbnail: string;
+  link: string;
+  description: string;
+  type: string;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'articles' | 'copywriting'>('articles');
+  const [activeTab, setActiveTab] = useState<'articles' | 'malayalamCopywriting' | 'copywriting'>('articles');
   
   // Article form state
   const [articleForm, setArticleForm] = useState({
@@ -70,18 +78,27 @@ export default function AdminDashboard() {
     description: '',
   });
 
+  // Malayalam Copywriting form state
+  const [malayalamCopywritingForm, setMalayalamCopywritingForm] = useState({
+    thumbnail: '',
+    link: '',
+    description: '',
+  });
+
   // Data state
   const [articles, setArticles] = useState<Article[]>([]);
+  const [malayalamCopywritingWorks, setMalayalamCopywritingWorks] = useState<MalayalamCopywritingWork[]>([]);
   const [copywritingWorks, setCopywritingWorks] = useState<CopywritingWork[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   // Delete dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<{ id: string; type: 'article' | 'copywriting'; title?: string } | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; type: 'article' | 'malayalamCopywriting' | 'copywriting'; title?: string } | null>(null);
   
   // Edit state
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
+  const [editingMalayalamCopywritingId, setEditingMalayalamCopywritingId] = useState<string | null>(null);
   const [editingCopywritingId, setEditingCopywritingId] = useState<string | null>(null);
   const [editArticleForm, setEditArticleForm] = useState({
     title: '',
@@ -93,6 +110,11 @@ export default function AdminDashboard() {
   });
   const [editArticleThumbnailPreview, setEditArticleThumbnailPreview] = useState<string | null>(null);
   const [editArticleThumbnailMode, setEditArticleThumbnailMode] = useState<'url' | 'upload'>('url');
+  const [editMalayalamCopywritingForm, setEditMalayalamCopywritingForm] = useState({
+    thumbnail: '',
+    link: '',
+    description: '',
+  });
   const [editCopywritingForm, setEditCopywritingForm] = useState({
     thumbnail: '',
     link: '',
@@ -102,6 +124,7 @@ export default function AdminDashboard() {
   // Load data
   useEffect(() => {
     loadArticles();
+    loadMalayalamCopywritingWorks();
     loadCopywritingWorks();
   }, []);
 
@@ -122,6 +145,16 @@ export default function AdminDashboard() {
       setCopywritingWorks(data);
     } catch (error) {
       console.error('Failed to load copywriting works:', error);
+    }
+  };
+
+  const loadMalayalamCopywritingWorks = async () => {
+    try {
+      const response = await fetch('/api/malayalam-copywriting');
+      const data = await response.json();
+      setMalayalamCopywritingWorks(data);
+    } catch (error) {
+      console.error('Failed to load malayalam copywriting works:', error);
     }
   };
 
@@ -194,6 +227,38 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleMalayalamCopywritingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/malayalam-copywriting', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(malayalamCopywritingForm),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Malayalam copywriting work added successfully!' });
+        setMalayalamCopywritingForm({
+          thumbnail: '',
+          link: '',
+          description: '',
+        });
+        loadMalayalamCopywritingWorks();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to add malayalam copywriting work' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteArticle = (id: string, title?: string) => {
     setItemToDelete({ id, type: 'article', title });
     setDeleteDialogOpen(true);
@@ -203,7 +268,12 @@ export default function AdminDashboard() {
     if (!itemToDelete) return;
 
     try {
-      const endpoint = itemToDelete.type === 'article' ? '/api/articles' : '/api/copywriting';
+      const endpoint =
+        itemToDelete.type === 'article'
+          ? '/api/articles'
+          : itemToDelete.type === 'malayalamCopywriting'
+            ? '/api/malayalam-copywriting'
+            : '/api/copywriting';
       const response = await fetch(`${endpoint}?id=${itemToDelete.id}`, {
         method: 'DELETE',
       });
@@ -213,12 +283,17 @@ export default function AdminDashboard() {
       if (data.success) {
         setMessage({
           type: 'success',
-          text: itemToDelete.type === 'article'
-            ? 'Article deleted successfully!'
-            : 'Copywriting work deleted successfully!',
+          text:
+            itemToDelete.type === 'article'
+              ? 'Article deleted successfully!'
+              : itemToDelete.type === 'malayalamCopywriting'
+                ? 'Malayalam copywriting work deleted successfully!'
+                : 'Copywriting work deleted successfully!',
         });
         if (itemToDelete.type === 'article') {
           loadArticles();
+        } else if (itemToDelete.type === 'malayalamCopywriting') {
+          loadMalayalamCopywritingWorks();
         } else {
           loadCopywritingWorks();
         }
@@ -235,6 +310,11 @@ export default function AdminDashboard() {
 
   const handleDeleteCopywriting = (id: string, description?: string) => {
     setItemToDelete({ id, type: 'copywriting', title: description });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteMalayalamCopywriting = (id: string, description?: string) => {
+    setItemToDelete({ id, type: 'malayalamCopywriting', title: description });
     setDeleteDialogOpen(true);
   };
 
@@ -255,6 +335,15 @@ export default function AdminDashboard() {
   const handleEditCopywriting = (work: CopywritingWork) => {
     setEditingCopywritingId(work.id);
     setEditCopywritingForm({
+      thumbnail: work.thumbnail,
+      link: work.link,
+      description: work.description,
+    });
+  };
+
+  const handleEditMalayalamCopywriting = (work: MalayalamCopywritingWork) => {
+    setEditingMalayalamCopywritingId(work.id);
+    setEditMalayalamCopywritingForm({
       thumbnail: work.thumbnail,
       link: work.link,
       description: work.description,
@@ -321,8 +410,39 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleUpdateMalayalamCopywriting = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingMalayalamCopywritingId) return;
+
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/malayalam-copywriting', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingMalayalamCopywritingId, ...editMalayalamCopywritingForm }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Malayalam copywriting work updated successfully!' });
+        setEditingMalayalamCopywritingId(null);
+        loadMalayalamCopywritingWorks();
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to update malayalam copywriting work' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCancelEdit = () => {
     setEditingArticleId(null);
+    setEditingMalayalamCopywritingId(null);
     setEditingCopywritingId(null);
     setEditArticleForm({
       title: '',
@@ -331,6 +451,11 @@ export default function AdminDashboard() {
       date: '',
       thumbnail: '',
       link: '',
+    });
+    setEditMalayalamCopywritingForm({
+      thumbnail: '',
+      link: '',
+      description: '',
     });
     setEditCopywritingForm({
       thumbnail: '',
@@ -425,13 +550,13 @@ export default function AdminDashboard() {
         <Tabs
           value={activeTab}
           onValueChange={(value) =>
-            setActiveTab(value as 'articles' | 'copywriting')
+            setActiveTab(value as 'articles' | 'malayalamCopywriting' | 'copywriting')
           }
           className="w-full"
         >
           <Card>
             <CardContent className="p-0">
-              <TabsList className="grid w-full grid-cols-2 h-auto bg-transparent border-b rounded-none">
+              <TabsList className="grid w-full grid-cols-3 h-auto bg-transparent border-b rounded-none">
                 <TabsTrigger
                   value="articles"
                   className={cn(
@@ -440,6 +565,15 @@ export default function AdminDashboard() {
                   )}
                 >
                   Published Stories
+                </TabsTrigger>
+                <TabsTrigger
+                  value="malayalamCopywriting"
+                  className={cn(
+                    'rounded-none border-b-2 border-transparent py-4 px-6',
+                    activeTab === 'malayalamCopywriting' && 'border-indigo-600 bg-transparent shadow-none text-indigo-600'
+                  )}
+                >
+                  Malayalam Copywriting
                 </TabsTrigger>
                 <TabsTrigger
                   value="copywriting"
@@ -819,6 +953,172 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
+          {/* Malayalam Copywriting Tab */}
+          <TabsContent value="malayalamCopywriting" className="mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Add Malayalam Copywriting Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Add New Malayalam Copywriting Work</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleMalayalamCopywritingSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="malayalam-copywriting-thumbnail">Thumbnail Path</Label>
+                      <Input
+                        id="malayalam-copywriting-thumbnail"
+                        value={malayalamCopywritingForm.thumbnail}
+                        onChange={(e) =>
+                          setMalayalamCopywritingForm({ ...malayalamCopywritingForm, thumbnail: e.target.value })
+                        }
+                        required
+                        placeholder="e.g., /malayalam-copywriting/mc1.png"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="malayalam-copywriting-link">Link</Label>
+                      <Input
+                        id="malayalam-copywriting-link"
+                        type="url"
+                        value={malayalamCopywritingForm.link}
+                        onChange={(e) => setMalayalamCopywritingForm({ ...malayalamCopywritingForm, link: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="malayalam-copywriting-description">Description</Label>
+                      <Textarea
+                        id="malayalam-copywriting-description"
+                        value={malayalamCopywritingForm.description}
+                        onChange={(e) =>
+                          setMalayalamCopywritingForm({ ...malayalamCopywritingForm, description: e.target.value })
+                        }
+                        required
+                        rows={3}
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-emerald-600 to-indigo-600 text-white hover:from-emerald-700 hover:to-indigo-700"
+                    >
+                      {loading ? 'Adding...' : 'Add Malayalam Work'}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* Malayalam Copywriting Works List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    Existing Works{' '}
+                    <Badge variant="secondary" className="ml-2">
+                      {malayalamCopywritingWorks.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                    {malayalamCopywritingWorks.map((work) => (
+                      <div key={work.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                        {editingMalayalamCopywritingId === work.id ? (
+                          <form onSubmit={handleUpdateMalayalamCopywriting} className="space-y-4">
+                            <div>
+                              <Label htmlFor="edit-malayalam-copywriting-thumbnail">Thumbnail Path</Label>
+                              <Input
+                                id="edit-malayalam-copywriting-thumbnail"
+                                value={editMalayalamCopywritingForm.thumbnail}
+                                onChange={(e) =>
+                                  setEditMalayalamCopywritingForm({ ...editMalayalamCopywritingForm, thumbnail: e.target.value })
+                                }
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-malayalam-copywriting-link">Link</Label>
+                              <Input
+                                id="edit-malayalam-copywriting-link"
+                                type="url"
+                                value={editMalayalamCopywritingForm.link}
+                                onChange={(e) =>
+                                  setEditMalayalamCopywritingForm({ ...editMalayalamCopywritingForm, link: e.target.value })
+                                }
+                                required
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-malayalam-copywriting-description">Description</Label>
+                              <Textarea
+                                id="edit-malayalam-copywriting-description"
+                                value={editMalayalamCopywritingForm.description}
+                                onChange={(e) =>
+                                  setEditMalayalamCopywritingForm({ ...editMalayalamCopywritingForm, description: e.target.value })
+                                }
+                                required
+                                rows={3}
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                type="submit"
+                                disabled={loading}
+                                className="flex-1 bg-gradient-to-r from-emerald-600 to-indigo-600 text-white hover:from-emerald-700 hover:to-indigo-700"
+                              >
+                                {loading ? 'Updating...' : 'Update'}
+                              </Button>
+                              <Button
+                                type="button"
+                                onClick={handleCancelEdit}
+                                variant="outline"
+                                className="flex-1"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </form>
+                        ) : (
+                          <div className="flex items-start gap-4">
+                            <img
+                              src={work.thumbnail}
+                              alt={work.description}
+                              className="w-20 h-20 object-cover rounded"
+                            />
+                            <div className="flex-1">
+                              <p className="font-medium text-gray-800 mb-1">{work.description}</p>
+                              <p className="text-xs text-gray-500 mb-2 truncate">{work.link}</p>
+                              <div className="flex gap-2 mt-2">
+                                <Button
+                                  onClick={() => handleEditMalayalamCopywriting(work)}
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex-1"
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  onClick={() => handleDeleteMalayalamCopywriting(work.id, work.description)}
+                                  variant="destructive"
+                                  size="sm"
+                                  className="flex-1 text-white"
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {malayalamCopywritingWorks.length === 0 && (
+                      <p className="text-gray-500 text-center py-8">No malayalam works yet. Add your first work!</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Copywriting Tab */}
           <TabsContent value="copywriting" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -983,7 +1283,12 @@ export default function AdminDashboard() {
             <DialogHeader>
               <DialogTitle>Confirm Deletion</DialogTitle>
               <DialogDescription>
-                Are you sure you want to delete this {itemToDelete?.type === 'article' ? 'article' : 'copywriting work'}?
+                Are you sure you want to delete this{' '}
+                {itemToDelete?.type === 'article'
+                  ? 'article'
+                  : itemToDelete?.type === 'malayalamCopywriting'
+                    ? 'malayalam copywriting work'
+                    : 'copywriting work'}
                 {itemToDelete?.title && (
                   <span className="block mt-2 font-medium text-foreground">
                     "{itemToDelete.title}"
