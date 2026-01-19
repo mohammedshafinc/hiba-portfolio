@@ -13,9 +13,9 @@ export default function Home() {
       <Header />
       <Hero />
       <About />
-      <PublishedStories />
-      <MalayalamCopywritingWork />
       <CopywritingWork />
+      <MalayalamCopywritingWork />
+      <PublishedStories />
       <Contact />
       <Footer />
     </div>

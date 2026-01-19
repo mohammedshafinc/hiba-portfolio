@@ -16,9 +16,9 @@ const Header = () => {
   }, []);
 
   const navItems = [
-    { name: 'Work', href: '#articles' },
-    { name: 'Malayalam', href: '#malayalam-copywriting' },
     { name: 'Copywriting', href: '#copywriting' },
+    { name: 'Malayalam', href: '#malayalam-copywriting' },
+    { name: 'Articles', href: '#articles' },
     { name: 'About', href: '#about' },
     { name: 'Contact', href: '#contact' },
   ];
